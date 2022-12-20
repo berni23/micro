@@ -13,7 +13,7 @@ import (
 type Mail struct {
 	Domain      string
 	Host        string
-	port        int
+	Port        int
 	Username    string
 	Password    string
 	Encryption  string
@@ -64,7 +64,7 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 
 	server := mail.NewSMTPClient()
 	server.Host = m.Host
-	server.Port = m.port
+	server.Port = m.Port
 	server.Username = m.Username
 	server.Password = m.Password
 	server.Encryption = m.getEncryption(m.Encryption)
@@ -88,23 +88,20 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	email.SetBody(mail.TextPlain, plainMessage)
 	email.AddAlternative(mail.TextHTML, formattedMessage)
 
-
-	if len(msg.Attachments)>0 {
-
+	if len(msg.Attachments) > 0 {
 
 		//we have some attatchments
 
-		for _,x:=range msg.Attachments {
-			//each entry is the full path to whatever i want to attatch 
+		for _, x := range msg.Attachments {
+			//each entry is the full path to whatever i want to attatch
 			email.AddAttachment(x)
 		}
 	}
 
 	// last step, actually send the email
 
-
 	err = email.Send(smtpClient)
-	return err 
+	return err
 
 }
 
@@ -118,7 +115,7 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 
 	if err != nil {
 
-		return _, err
+		return "", err
 	}
 
 	var tpl bytes.Buffer
@@ -127,7 +124,7 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 
 		return "", err
 	}
-	formattedMessage := tpl.String
+	formattedMessage := tpl.String()
 	formattedMessage, err = m.inlineCSS(formattedMessage)
 
 	if err != nil {
@@ -149,7 +146,7 @@ func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
 
 	if err != nil {
 
-		return _, err
+		return "", err
 	}
 
 	var tpl bytes.Buffer

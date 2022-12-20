@@ -5,58 +5,53 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
-
 type Config struct {
-
 	Mailer Mail
-
 }
-
 
 const webPort = "80"
 
-func main(){
+func main() {
 
+	app := Config{
 
-app:=Config{
+		Mailer: createMail(),
+	}
 
-	Mailer: createMail(),
-}
+	log.Println("Starting mail service on port", webPort)
 
-log.Println("Starting mail service on port",webPort)
+	//define a server who listens on port 80 and uses mail service routes
 
-//define a server who listens on port 80 and uses mail service routes
+	srv := &http.Server{
 
-srv:= &http.Server {
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
 
-	Addr: fmt.Sprintf(":%s",webPort),
-	Handler: app.routes(),
-}
+	err := srv.ListenAndServe()
 
-err:= srv.ListenAndServe()
-
-if err!=nil {
-	log.Panic(err)
-}
+	if err != nil {
+		log.Panic(err)
+	}
 
 }
 
 func createMail() Mail {
 
-	port,_:=strconv.Atoi(os.Getenv("MAIL_PORT"))
-	m:= Mail{
+	port, _ := strconv.Atoi(os.Getenv("MAIL_PORT"))
+	m := Mail{
 
-		Domain: os.Getenv("MAIL_DOMAIN")
-		Host: os.Getenv("MAIL_HOST")
-		Port: port,
-		Username: os.Getenv("MAIL_USERNAME")
-		Password: os.Getenv("MAIL_PASSWORD")
-		Encryption: os.Getenv("MAIL_ENCRYPTION")
-		FromName: os.Getenv("FROM_NAME")
-		FromAddress : os.Getenv("FROM_ADDRESS")
-
+		Domain:      os.Getenv("MAIL_DOMAIN"),
+		Host:        os.Getenv("MAIL_HOST"),
+		Port:        port,
+		Username:    os.Getenv("MAIL_USERNAME"),
+		Password:    os.Getenv("MAIL_PASSWORD"),
+		Encryption:  os.Getenv("MAIL_ENCRYPTION"),
+		FromName:    os.Getenv("FROM_NAME"),
+		FromAddress: os.Getenv("FROM_ADDRESS"),
 	}
 
 	return m

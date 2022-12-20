@@ -2,52 +2,47 @@ package main
 
 import (
 	"net/http"
-	"github.com/dgrijalva/jwt-go/request"
 )
 
 // from, to , subject, message
-func (app *Config) SendMail( w http.ResponseWriter, r *http.Request){
-
+func (app *Config) SendMail(w http.ResponseWriter, r *http.Request) {
 
 	type mailMesssage struct {
-
-		From string `json:"from"`
-		To string `json:"to"`
+		From    string `json:"from"`
+		To      string `json:"to"`
 		Subject string `json"subject"`
 		Message string `json:message"`
 	}
 
-
 	var requestPayload mailMesssage
-	err:= app.readJSON(w,r,&requesxtPayload)
+	err := app.readJSON(w, r, &requestPayload)
 
-	if err!=nil {
-		app.errorJSON(w,err)
-		return 
+	if err != nil {
+		app.errorJSON(w, err)
+		return
 	}
 
-	msg:= Message {
+	msg := Message{
 
-		From : requestPayload.From,
-		To: requestPayload.To,
+		From:    requestPayload.From,
+		To:      requestPayload.To,
 		Subject: requestPayload.Subject,
-		Data: requestPayload.Message
+		Data:    requestPayload.Message,
 	}
 
-	err =app.Mailer.SendSMTPMessage(msg)
+	err = app.Mailer.SendSMTPMessage(msg)
 
-	if err!=nil{
+	if err != nil {
 
-		app.errorJSON(w,err)
+		app.errorJSON(w, err)
 
-		return 
+		return
 	}
 
-	payload = jsonResponse{
-		Error: false,
+	payload := jsonResponse{
+		Error:   false,
 		Message: "sent to " + requestPayload.To,
 	}
 
-	app.writeJSON(w, http.StatusAccepted,payload)
+	app.writeJSON(w, http.StatusAccepted, payload)
 }
-
