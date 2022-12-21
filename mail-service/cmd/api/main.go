@@ -15,35 +15,26 @@ type Config struct {
 const webPort = "80"
 
 func main() {
-
 	app := Config{
-
 		Mailer: createMail(),
 	}
 
 	log.Println("Starting mail service on port", webPort)
 
-	//define a server who listens on port 80 and uses mail service routes
-
 	srv := &http.Server{
-
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
 	err := srv.ListenAndServe()
-
 	if err != nil {
 		log.Panic(err)
 	}
-
 }
 
 func createMail() Mail {
-
 	port, _ := strconv.Atoi(os.Getenv("MAIL_PORT"))
 	m := Mail{
-
 		Domain:      os.Getenv("MAIL_DOMAIN"),
 		Host:        os.Getenv("MAIL_HOST"),
 		Port:        port,
