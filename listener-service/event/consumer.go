@@ -87,6 +87,8 @@ func (consumer *Consumer) Listen(topics []string) error {
 
 	}
 
+	return nil 
+
 	// return handlePayload(paylad)
 }
 
