@@ -1,22 +1,19 @@
 package event
 
 import (
+	"fmt"
 	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-
-
 type Emitter struct {
-
-
 	connection *amqp.Connection
 }
 
 func (e *Emitter) setup() error {
-	channel,err:= e.connection.Channel()
-	if err!=nil{
+	channel, err := e.connection.Channel()
+	if err != nil {
 		return err
 	}
 
@@ -25,46 +22,40 @@ func (e *Emitter) setup() error {
 
 }
 
-
-func (e *Emitter) Push( event string, severity string) error {
-
-
-	channel, err :=e.connection.Channel()
-
-	if err!=nil{
-
+func (e *Emitter) Push(event string, severity string) error {
+	channel, err := e.connection.Channel()
+	if err != nil {
 		return err
 	}
-
 	defer channel.Close()
-
 	log.Println("pushing to channel")
-
+	fmt.Println("channel", channel)
 
 	err = channel.Publish(
 		"logs_topic",
-		 severity,
-		 false, //mandatory
-		 false, //immediate
-	     amqp.Publishing{
-		 	ContentType:"text/plain",
-			Body: []byte(event),
+		severity,
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(event),
 		},
 	)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
-
-	return nil 
+	return nil
 }
 
-func NewEventEmitter ( conn *amqp.Connection) (Emitter,error){
+func NewEventEmitter(conn *amqp.Connection) (Emitter, error) {
 
 	emitter := Emitter{
 		connection: conn,
 	}
-	err:= emitter.setup()
-	if err!=nil {
+
+	fmt.Println("new event emitter")
+	err := emitter.setup()
+	if err != nil {
 		return Emitter{}, err
 	}
 	return emitter, nil

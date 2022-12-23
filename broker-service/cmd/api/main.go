@@ -20,18 +20,19 @@ type Config struct {
 
 func main() {
 
-
 	rabbitConn, err:=connect()
-
 	if err!=nil{
 
 		log.Println(err)
 		os.Exit(1)
 
 	}
+
+	log.Printf("Rabbit connection")
+
+
 	defer rabbitConn.Close()
 	app := Config{
-
 		Rabbit:rabbitConn,
 	}
 

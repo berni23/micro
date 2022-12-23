@@ -24,11 +24,18 @@ func main() {
 	//start listening for messages
 
 	log.Println("Listening for and consuming rabbitmq messages")
+	// log.Println("connection rabbitMQ:",rabbitConn)
+	// fmt.Println("connection rabbitMQ:",rabbitConn)
+
 	//create consumer
 
 	//watch the queue and consume events
 
 	consumer, err:= event.NewConsumer(rabbitConn)
+
+
+	// fmt.Println("consumer rabbitMQ:",consumer)
+
 
 	if err!=nil {
 

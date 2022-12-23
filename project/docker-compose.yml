@@ -1,14 +1,12 @@
-version: '3'
-
+version: "3.8"
 services:
-
   broker-service:
     build:
       context: ./../broker-service
       dockerfile: ./../broker-service/broker-service.dockerfile
     restart: always
     ports:
-      - "8080:80"
+      - "9080:80"
     deploy:
       mode: replicated
       replicas: 1
@@ -62,7 +60,7 @@ services:
       replicas: 1
 
   postgres:
-    image: 'postgres:14.0'
+    image: 'postgres:14.2'
     ports:
       - "5432:5432"
     restart: always
@@ -74,10 +72,10 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: users
     volumes:
-      - ./db-data/postgres/:/var/lib/postgresql/data/
-
+      - ./db-data/postgres:/var/lib/postgresql/data:z
   mongo:
     image: 'mongo:4.2.16-bionic'
+    # user: 1000:1000
     ports:
       - "27017:27017"
     environment:
@@ -93,14 +91,21 @@ services:
       - "1025:1025"
       - "8025:8025"
   rabbitmq: 
-     image: 'rabbitmq:3.9-alpine'
-     ports:
-      - "5672:5672"
-     deploy:
-       mode: replicated
-       replicas: 1
-     volumes:
-      - ./db-data/rabbitmq:/var/lib/rabbitmq/
+    image: 'rabbitmq:3-management'
+    restart: always
+    environment:
+    - RABBITMQ_DEFAULT_USER=admin
+    - RABBITMQ_DEFAULT_PASS=password
+    ports:
+    - "5672:5672"
+    - '15672:15672'
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+    - ./db-data/rabbitmq:/var/lib/rabbitmq/mnesia
+
+
     
       
       
