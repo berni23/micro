@@ -247,7 +247,7 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 	// data that will be populated by the remote rpc call
 	var result string
 	// any method that i want to expose on the server end must be exposed
-	err = client.Call("RPCServcer.LogInfo", rpcPayload, &result)
+	err = client.Call("RPCServer.LogInfo", rpcPayload, &result)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
