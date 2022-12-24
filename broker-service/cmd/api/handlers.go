@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"net/rpc"
 )
 
 type RequestPayload struct {
@@ -55,7 +56,9 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
 	case "log":
-		app.logEventViaRabbit(w, requestPayload.Log)
+		// app.logEventViaRabbit(w, requestPayload.Log)
+
+		app.logItemViaRPC(w, requestPayload.Log)
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
 	default:
@@ -184,37 +187,78 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
-
-func ( app *Config) logEventViaRabbit( w http.ResponseWriter, l LogPayload){
-	err:=app.pushToQueue(l.Name,l.Data)
-	if err!=nil{
-		app.errorJSON(w,err)
-		return 
+func (app *Config) logEventViaRabbit(w http.ResponseWriter, l LogPayload) {
+	err := app.pushToQueue(l.Name, l.Data)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
 	}
 	var payload jsonResponse
 	payload.Error = false
 	payload.Message = "logged via rabbit MQ"
 
-	app.writeJSON(w,http.StatusAccepted,payload)
-	
+	app.writeJSON(w, http.StatusAccepted, payload)
+
 }
 
-func (app *Config) pushToQueue( name,  msg string ) error {
+func (app *Config) pushToQueue(name, msg string) error {
 
-	emitter,err:=  event.NewEventEmitter(app.Rabbit)
+	emitter, err := event.NewEventEmitter(app.Rabbit)
 
-	if err!=nil{
+	if err != nil {
 
 		return err
 	}
 
-	payload :=LogPayload {
+	payload := LogPayload{
 
-		Name:name,
-		Data: msg,	
+		Name: name,
+		Data: msg,
 	}
 
-	j,_ :=json.MarshalIndent(&payload,"","\t")
-	err = emitter.Push(string(j),"log.INFO")
-	return err 
+	j, _ := json.MarshalIndent(&payload, "", "\t")
+	err = emitter.Push(string(j), "log.INFO")
+	return err
+}
+
+type RPCPayload struct {
+	Name string
+	Data string
+}
+
+func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
+
+	// client -> point to logger service with  corresponding port
+	client, err := rpc.Dial("tcp", "logger-service:5001")
+
+	if err != nil {
+
+		app.errorJSON(w, err)
+	}
+
+	// create a type that exactly matches the one that the remote rpc service expects to get
+
+	rpcPayload := RPCPayload{
+
+		Name: l.Name,
+		Data: l.Data,
+	}
+
+	// data that will be populated by the remote rpc call
+	var result string
+	// any method that i want to expose on the server end must be exposed
+	err = client.Call("RPCServcer.LogInfo", rpcPayload, &result)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	payload := jsonResponse{
+
+		Error:   false,
+		Message: result,
+	}
+
+	app.writeJSON(w, http.StatusAccepted, payload)
+
 }
