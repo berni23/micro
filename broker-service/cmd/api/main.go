@@ -29,7 +29,7 @@ func main() {
 	}
 
 	log.Printf("Rabbit connection")
-
+	fmt.Println(rabbitConn)
 
 	defer rabbitConn.Close()
 	app := Config{
