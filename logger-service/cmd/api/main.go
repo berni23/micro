@@ -52,11 +52,13 @@ func main() {
 		Models: data.New(client),
 	}
 
-
 	//Register the RPC server
 
 	err = rpc.Register(new(RPCServer))
 	go app.rpcListen()
+
+	// listen for grpc connection in 50001
+	go app.gRPCListen()
 
 	// start web server
 	log.Println("Starting service on port", webPort)
@@ -72,27 +74,25 @@ func main() {
 
 }
 
-
 // the function that will startup our rpc server
 
 // to be executed right before we start our webserver
-func ( app *Config) rpcListen() error { 
+func (app *Config) rpcListen() error {
 
-	log.Println("Starting RPC server on port ",rpcPort)
-	listen, err:=  net.Listen("tcp",fmt.Sprintf("0.0.0.0:%s",rpcPort))
+	log.Println("Starting RPC server on port ", rpcPort)
+	listen, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
 
-	if err!=nil {
+	if err != nil {
 		return err
 	}
 
 	defer listen.Close()
 
-	for { 
+	for {
 
+		rpcConn, err := listen.Accept()
 
-		rpcConn, err:= listen.Accept()
-
-		if err!=nil { 
+		if err != nil {
 
 			continue
 		}
