@@ -20,7 +20,7 @@ services:
       mode: replicated
       replicas: 1
 
-  mailer-service:
+  mail-service:
     build:
       context: ./../mail-service
       dockerfile: ./../mail-service/mail-service.dockerfile
@@ -44,7 +44,7 @@ services:
       dockerfile: ./../authentication-service/authentication-service.dockerfile
     restart: always
     ports:
-      - "8081:80"
+      - "8080:80"
     deploy:
       mode: replicated
       replicas: 1
@@ -61,7 +61,6 @@ services:
 
   postgres:
     image: 'postgres:14.2'
-    # user: 1000:1000
     ports:
       - "5432:5432"
     restart: always
@@ -73,10 +72,9 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: users
     volumes:
-      - ./db-data/postgres:/postgresql:z
+      - ./db-data/postgres/:/var/lib/postgresql/data:z
   mongo:
     image: 'mongo:4.2.16-bionic'
-    # user: 1000:1000
     ports:
       - "27017:27017"
     environment:
@@ -94,9 +92,6 @@ services:
   rabbitmq: 
     image: 'rabbitmq:3-management'
     restart: always
-    # environment:
-    # - RABBITMQ_DEFAULT_USER=admin
-    # - RABBITMQ_DEFAULT_PASS=password
     ports:
     - "5672:5672"
     - '15672:15672'
