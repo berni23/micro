@@ -5,6 +5,7 @@ LOGGER_BINARY=loggerServiceApp
 MAIL_BINARY=mailerApp
 LISTENER_BINARY = listenerApp
 
+FRONT_BINARY = frontEndApp
 ## up: starts all containers in the background without forcing build
 up:
 	@echo "Starting Docker images..."
@@ -53,6 +54,14 @@ build_auth:
 build_mail:
 	@echo "Building mail binary..."
 	cd ../mail-service && env GOOS=linux CGO_ENABLED=0 go build -o ${MAIL_BINARY} ./cmd/api
+	@echo "Done!"
+
+
+
+build_front_linux:
+
+	@echo "Building front end binary..."
+	cd ../front-end && env CGO_ENABLED=0 go build -o ${FRONT_BINARY} ./cmd/web
 	@echo "Done!"
 
 ## build_front: builds the frone end binary

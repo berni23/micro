@@ -1,11 +1,14 @@
 version: '3'
 
 services: 
+
+  front-end:
+  image: berni23/front-end:1.0.0
+  deploy:
+    mode: replicated
+    replicas: 1
   broker-service: 
-    image: berni23/broker-service:1.0.0
-    ports: 
-      - "9080:80"
-    
+    image: berni23/broker-service:1.0.2    
     deploy: 
       mode: replicated
       replicas: 1
