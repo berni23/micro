@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/rpc"
 	"time"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -270,9 +269,7 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 
 
 
-
-
-func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request){
+func (app *Config)  LogViaGRPC(w http.ResponseWriter, r *http.Request){
 
 
 
