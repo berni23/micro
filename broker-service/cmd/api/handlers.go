@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/rpc"
 	"time"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -40,6 +41,8 @@ type LogPayload struct {
 }
 
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
+
+	enableCors(&w)
 	payload := jsonResponse{
 		Error:   false,
 		Message: "Hit the broker",
@@ -267,59 +270,50 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
+func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 
-
-func (app *Config)  LogViaGRPC(w http.ResponseWriter, r *http.Request){
-
-
-
-    log.Println("logging via grpc")
+	log.Println("logging via grpc")
 	var requestPayload RequestPayload
-	err:= app.readJSON(w,r,&requestPayload)
+	err := app.readJSON(w, r, &requestPayload)
 
-	if err!=nil {
-		app.errorJSON(w,err)
-		return 
+	if err != nil {
+		app.errorJSON(w, err)
+		return
 	}
 
-
 	// dial to port 50001
-	conn, err:= grpc.Dial("logger-service:50001",grpc.WithTransportCredentials(insecure.NewCredentials()),grpc.WithBlock())
+	conn, err := grpc.Dial("logger-service:50001", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 
-
-	if err != nil{
+	if err != nil {
 		app.errorJSON(w, err)
-		return 
+		return
 	}
 
 	defer conn.Close()
-	c:= logs.NewLogServiceClient(conn)
+	c := logs.NewLogServiceClient(conn)
 
-	ctx, cancel:= context.WithTimeout(context.Background(),time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	_,err = c.WriteLog(ctx,&logs.LogRequest{
-
+	_, err = c.WriteLog(ctx, &logs.LogRequest{
 
 		LogEntry: &logs.Log{
 
 			Name: requestPayload.Log.Name,
-			Data:requestPayload.Log.Data,
+			Data: requestPayload.Log.Data,
 		},
 	})
 
-	if err != nil{
+	if err != nil {
 		app.errorJSON(w, err)
-		return 
+		return
 	}
-
-
 
 	var payload jsonResponse
 	payload.Error = false
 	payload.Message = "logged"
 
-	app.writeJSON(w, http.StatusAccepted,payload)
+	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
-	// specify credentials ( for grpc we need valid credentials)
+// specify credentials ( for grpc we need valid credentials)

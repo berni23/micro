@@ -2,30 +2,33 @@ version: '3'
 services: 
 
   caddy:
-    image: berni23/micro-caddy:1.0.2
+    image: berni23/micro-caddy:1.0.8
     deploy:
      mode: replicated
      replicas: 1
     ports: 
     - "80:80"
     - "443:443" #ssl encrypted secure port
-    - "9000:9000"
-    - "9001:9001"
     volumes:
     - caddy_data:/data
     - caddy_config:/config
 
   front-end:
-   image: berni23/front-end:1.0.2
+   image: berni23/front-end:1.0.5
    deploy:
      mode: replicated
      replicas: 1
+  #  ports: 
+  #   - '8081:80'
+   environment:
+      BROKER_URL: 'http://backend'
   broker-service: 
-    image: berni23/broker-service:1.0.2    
+    image: berni23/broker-service:1.0.9
     deploy: 
       mode: replicated
       replicas: 1
-  
+    # ports: 
+    # - '9080:80'
   listener-service:
     image: berni23/listener-service:1.0.2
     
@@ -43,7 +46,7 @@ services:
       DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
 
   logger-service:
-    image: berni23/logger-service:1.0.2
+    image: berni23/logger-service:1.0.3
     deploy:
       mode: replicated
       replicas: 1

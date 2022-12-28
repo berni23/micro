@@ -6,11 +6,10 @@ services:
       dockerfile: ./../broker-service/broker-service.dockerfile
     restart: always
     ports:
-      - "9080:9080"
+      - "80:9080"   # outside:inside
     deploy:
       mode: replicated
       replicas: 1
-
   logger-service:
     build:
       context: ./../logger-service
@@ -19,7 +18,6 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-
   mail-service:
     build:
       context: ./../mail-service
@@ -37,7 +35,6 @@ services:
       MAIL_PASSWORD: ""
       FROM_NAME: "John Smith"
       FROM_ADDRESS: john.smith@example.com
-
   authentication-service:
     build:
       context: ./../authentication-service

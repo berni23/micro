@@ -1,3 +1,4 @@
+
 {
     email   bernatferrerm@gmail.com
 }
@@ -8,7 +9,11 @@
 		path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.json
 	}
 	header @static Cache-Control max-age=5184000
+	# header  Access-Control-Allow-Credentials true
+	# header  Access-Control-Allow-Origin http://backend
+	# header  Access-Control-Allow-Methods "OPTIONS,HEAD,GET,POST,PUT,PATCH,DELETE"
 }
+
 
 (security) {
 	header {
@@ -18,16 +23,30 @@
 		X-Content-Type-Options nosniff
 		# keep referrer data off of HTTP connections
 		Referrer-Policy no-referrer-when-downgrade
+	    # Access-Control-Allow-Credentials true
+	
+
 	}
 }
 
-localhost:9000 {
+localhost:80 {
+
+
 	encode zstd gzip
 	import static
-
 	reverse_proxy  http://front-end:8081
 }
 
-backend:9001 {
+backend:80 {
+
+
 	reverse_proxy http://broker-service:9080
+
+	    header {
+			Access-Control-Allow-Origin *
+			Access-Control-Allow-Credentials true
+			Access-Control-Allow-Methods *
+			Access-Control-Allow-Headers *
+			defer
+    }
 }
