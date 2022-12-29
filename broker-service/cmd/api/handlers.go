@@ -68,6 +68,8 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 
 		app.logItemViaRPC(w, requestPayload.Log)
 	case "mail":
+
+		log.Println("sending an email")
 		app.sendMail(w, requestPayload.Mail)
 	default:
 		app.errorJSON(w, errors.New("unknown action"))
@@ -165,7 +167,7 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	jsonData, _ := json.MarshalIndent(msg, "", "\t")
 
 	// call the mail service
-	mailServiceURL := "http://mailer-service/send"
+	mailServiceURL := "http://mail-service/send"
 
 	// post to mail service
 	request, err := http.NewRequest("POST", mailServiceURL, bytes.NewBuffer(jsonData))
@@ -173,6 +175,7 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 		app.errorJSON(w, err)
 		return
 	}
+	log.Println("email sent", jsonData)
 
 	request.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}

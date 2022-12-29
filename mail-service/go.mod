@@ -1,4 +1,4 @@
-module mailer-service
+module mail-service
 
 go 1.18
 
