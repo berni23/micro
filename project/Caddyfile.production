@@ -23,29 +23,19 @@
 		X-Content-Type-Options nosniff
 		# keep referrer data off of HTTP connections
 		Referrer-Policy no-referrer-when-downgrade
-	    # Access-Control-Allow-Credentials true
 	
-
 	}
 }
 
-swarm.bernatferrer.com:80 {
-
-
+swarm.bernatferrer.com {
 	encode zstd gzip
 	import static
+    import security
+
 	reverse_proxy  http://front-end:8081
 }
 
 
-broker.bernatferrer.com:80 {
+broker.bernatferrer.com {
 	reverse_proxy http://broker-service:9080
-
-	    header {
-			Access-Control-Allow-Origin *
-			Access-Control-Allow-Credentials true
-			Access-Control-Allow-Methods *
-			Access-Control-Allow-Headers *
-			defer
-    }
 }

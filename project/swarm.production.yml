@@ -2,7 +2,7 @@ version: '3'
 services: 
 
   caddy:
-    image: berni23/micro-caddy-production:1.0.0
+    image: berni23/micro-caddy-production:1.0.2
     deploy:
       mode: replicated
       replicas: 1
@@ -23,14 +23,14 @@ services:
      mode: replicated
      replicas: 1
    environment:
-      BROKER_URL: 'http://broker.bernatferrer.com'
+      BROKER_URL: 'https://broker.bernatferrer.com'
   broker-service: 
     image: berni23/broker-service:1.1.1
     deploy: 
       mode: replicated
       replicas: 1
   listener-service:
-    image: berni23/listener-service:1.0.2
+    image: berni23/listener-service:1.0.0
     
     deploy:
       mode: replicated

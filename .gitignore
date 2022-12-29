@@ -7,6 +7,11 @@ project/db-data
 project/db-data/*
 
 
+
+project/caddy.production.dockerfile
+project/Caddyfile.production
+project/swarm.production.yml
+
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
