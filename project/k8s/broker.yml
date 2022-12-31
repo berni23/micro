@@ -14,7 +14,7 @@ spec:
     spec:
       containers: 
       - name: broker-service
-        image: "berni23/broker-service:1.1.2"
+        image: "berni23/broker-service:1.1.1"
         resources:
           requests:
             memory: "64Mi"
