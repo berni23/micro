@@ -167,7 +167,10 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	jsonData, _ := json.MarshalIndent(msg, "", "\t")
 
 	// call the mail service
-	mailServiceURL := "http://mail-service/send"
+	// mailServiceURL := "http://mail-service/send"
+
+
+	mailServiceURL := "http://host.docker.internal:1025/send"
 
 	// post to mail service
 	request, err := http.NewRequest("POST", mailServiceURL, bytes.NewBuffer(jsonData))

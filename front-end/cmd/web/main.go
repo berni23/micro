@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
@@ -14,6 +13,7 @@ func main() {
 		render(w, "test.page.gohtml")
 	})
 
+	// to make it run with docker swarm , change port 80 to port 8081
 	fmt.Println("Starting front end service on port 8081")
 	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
@@ -36,19 +36,20 @@ func render(w http.ResponseWriter, t string) {
 	for _, x := range partials {
 		templateSlice = append(templateSlice, x)
 	}
-	tmpl, err := template.ParseFS(templateFS,templateSlice...)
+	tmpl, err := template.ParseFS(templateFS, templateSlice...)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-
 	var data struct {
-
-		BrokerURL string 
+		BrokerURL string
 	}
 
-	data.BrokerURL = os.Getenv("BROKER_URL")
+	//uncomment if we want to make it work using docker swarm
+
+	//data.BrokerURL = os.Getenv("BROKER_URL")
+	data.BrokerURL = "http://localhost:9080"
 
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

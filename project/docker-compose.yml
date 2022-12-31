@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   broker-service:
     build:
@@ -10,6 +9,7 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+  logger-service:
     build:
       context: ./../logger-service
       dockerfile: ./../logger-service/logger-service.dockerfile

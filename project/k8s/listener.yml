@@ -14,7 +14,7 @@ spec:
     spec:
       containers: 
       - name: listener-service
-        image: berni23/listener-service:1.0.2
+        image: berni23/listener-service:1.0.0
         resources:
           requests:
             memory: "64Mi"
