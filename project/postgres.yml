@@ -1,27 +1,24 @@
-version: "3.8"
-services:
-  postgres:
-    # user: "1000:1000"
-    image: 'postgres:15.1'
+version: '3.7'
 
-      # args:
-      #   UNAME: berni
-      #   UID: 1000
-      #   GID: 1000
-      
+volumes:
+   db-data:
+
+services:
+  database:
+    image: postgres:latest
     restart: always
-    ports:
-      - "5432:5432"
-    deploy:
-      mode: replicated
-      replicas: 1
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: users
+      PGDATA: /pg-data
+    ports:
+      - "5432:5432"
     volumes:
-       - ./db-data/postgres/:/var/lib/postgresql/data:z 
+      - db-data:/db-data
+
     
 #docker container run -d name=postgres2 -p 5433:5433 --user $(id -u):$(id -g) -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -v /GO_PROJECTS/go-micro/project/db-data/postgres/:/var/lib/postgresql/data postgres:latest
 
       
+#docker container run -d --name=postgres -p 5432:5432 --user $(id -u):$(id -g) -e POSTGRES_DB=users -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -v ./db-data/postgres/:/var/lib/postgresql/data:z  postgres:latest

@@ -14,7 +14,7 @@ services:
     - caddy_config:/config
 
   front-end:
-   image: berni23/front-end:1.0.5
+   image: berni23/front-end:1.0.6
    deploy:
      mode: replicated
      replicas: 1
